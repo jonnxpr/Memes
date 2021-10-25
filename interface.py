@@ -4,6 +4,6 @@
 # Alunos: Ana Flávia Dias, Eduardo Pereira, Jonathan Douglas e Umberto Castanheira
 # Versão: 1.0
 # Data da última modificação: 25/10/2021
-# Arquivo: svm.py
+# Arquivo: interface.py
 
-print("svm.py")  
+print("interface.py") 
