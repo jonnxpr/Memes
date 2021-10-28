@@ -6,4 +6,4 @@
 # Data da última modificação: 25/10/2021
 # Arquivo: svm.py
 
-print("svm.py")  
+print("svm.py") 
