@@ -22,9 +22,9 @@ def openImage(path):
 # requisito 2 - voltar aqui depois se necessário
 
 
-def fixInclination(path):
+def fixInclination(image):
     # carrega a imagem
-    image = cv2.imread(path)
+    #image = cv2.imread(path)
 
     # corrige a escala de cinza
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -62,33 +62,17 @@ def fixInclination(path):
     print("[INFO] angle: {:.3f}".format(angle))
     cv2.imshow("Input", image)
     cv2.imshow("Rotated", rotated)
-    # --------------
-    # corrige a escala de cinza
-    gray = cv2.cvtColor(rotated, cv2.COLOR_BGR2GRAY)
-    gray = cv2.bitwise_not(gray)
-
-    '''
-    limiariza a imagem setando os pixels do primeiro plano
-    para 255 e os do fundo para 0
-    '''
-    thresh = cv2.threshold(gray, 0, 255,
-                           cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-    # captura as coordenadas dos pixels que são maiores do que 0
-    # e computa a área de rotação que contém todas as coordenadas
-    coords = np.column_stack(np.where(thresh > 0))
-    angle = cv2.minAreaRect(coords)[-1]
-    print("angulo final da imagem = ", angle)
-    # ------------
     cv2.waitKey(0)
+    
+    return rotated
 
 # requisito 1 - pronto
-
-
-def binarizeImage(path):
-    im_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+def binarizeImage(im_gray):
+    #im_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     (thresh, im_bw) = cv2.threshold(im_gray, 128,
                                     50, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    cv2.imwrite("bwimage.png", im_bw)
+    #cv2.imwrite("bwimage.png", im_bw)
+    return im_bw
 
 
 def removeNoise(path):
@@ -212,15 +196,8 @@ def scale(path):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-
-hor = horizontalProjection("assets/img/numbers.jpg")
-vert = verticalProjection("assets/img/numbers.jpg")
-
-projConcat = hor/255 + vert/255
-print("horizontal =\n", hor)
-print("vertical =\n", vert)
-print("vertical =\n",projConcat)
-cv2.imshow("Concatenada", projConcat)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
+def getGrayImage(image):
+    coeffs = np.array([0.114, 0.587, 0.229])
+    images_gray = (image.astype(np.float) * coeffs).sum(axis=-1, keepdims=True)
+    images_gray = images_gray.astype(image.dtype)   
+    return image

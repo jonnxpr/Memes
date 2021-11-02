@@ -7,5 +7,13 @@
 # Arquivo: svm.py
 
 #Importações
-import numpy
 import svm
+from scipy.spatial import distance
+import scipy
+import numpy as np 
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+
+
