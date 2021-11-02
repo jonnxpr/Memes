@@ -10,7 +10,7 @@
 import numpy as np
 import cv2
 from PIL import Image
-import tensorflow as tf
+
 import matplotlib.pyplot as plt
 
 # já funciona!
@@ -138,6 +138,8 @@ def horizontalProjection(path):
     cv2.imshow("img", img1)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    
+    return img1;
 
 
 def verticalProjection(path):
@@ -161,6 +163,7 @@ def verticalProjection(path):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+    return img1;
 
 def skeletonize(path):
     # Read the image as a grayscale image
@@ -209,7 +212,15 @@ def scale(path):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    
-scale("assets/img/lenna.png")
 
+hor = horizontalProjection("assets/img/numbers.jpg")
+vert = verticalProjection("assets/img/numbers.jpg")
+
+projConcat = hor/255 + vert/255
+print("horizontal =\n", hor)
+print("vertical =\n", vert)
+print("vertical =\n",projConcat)
+cv2.imshow("Concatenada", projConcat)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
