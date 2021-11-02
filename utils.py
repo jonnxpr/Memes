@@ -30,19 +30,21 @@ def fixInclination(path):
     '''
     thresh = cv2.threshold(gray, 0, 255,
     cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-
     #captura as coordenadas dos pixels que são maiores do que 0
     #e computa a área de rotação que contém todas as coordenadas
     coords = np.column_stack(np.where(thresh > 0))
     angle = cv2.minAreaRect(coords)[-1]
-
+    print("angle imagem: ", angle)
+    
     if angle < -45:
         angle = -(90 + angle)
+        print("if")
     # otherwise, just take the inverse of the angle to make
     # it positive
     else:
         angle = -angle
-        
+        print("else")
+    
     (h, w) = image.shape[:2]
     center = (w // 2, h // 2)
     M = cv2.getRotationMatrix2D(center, angle, 1.0)
@@ -58,7 +60,7 @@ def fixInclination(path):
 
 def binarizeImage(path):
     im_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    (thresh, im_bw) = cv2.threshold(im_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    (thresh, im_bw) = cv2.threshold(im_gray, 128, 50, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     cv2.imwrite("bwimage.png", im_bw)
     
 def removeNoise(path):
@@ -85,6 +87,5 @@ def equalizeHistogram(path):
     cv2.imshow('Source image', src)
     cv2.imshow('Equalized Image', dst)
     cv2.waitKey()
-
-equalizeHistogram("assets/img/lenna.png")
-
+    
+fixInclination("assets/img/testInclination.png")
