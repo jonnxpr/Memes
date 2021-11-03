@@ -11,7 +11,14 @@ import cv2
 from PIL import Image
 import matplotlib.pyplot as plt
 import gzip
+
+from numpy.lib.ufunclike import fix
 from utils import *
+import idx2numpy
+from keras.datasets import mnist
+import sklearn
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report
 
 '''
     Processo:
@@ -32,25 +39,33 @@ from utils import *
     Lastly, apply closing(dilation then erosion) on the image to close all the 
     small holes inside the words.
 '''
-f = gzip.open('assets/img/baseMinst/train-images-idx3-ubyte.gz','r')
+data = mnist.load_data()
+(X_train, y_train), (X_test, y_test) = data
 
-image_size = 28
-num_images = 5
+arrayFinal = np.array([])
 
-f.read(16)
-buf = f.read(image_size * image_size * num_images)
-data = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
-data = data.reshape(num_images, image_size, image_size, 1)
+for i in range(0,50):
+    array = np.array(np.mat(data[0][0][i]))
+    projHor = horizontalProjection(array)
+    projVert = verticalProjection(array)
+    projConcat = projHor + projVert
+    clf = sklearn.svm.SVC(gamma=0.001, C=100)
+    clf.fit(projHor, np.array(projVert[0], ndmin = 1))
+    #predicted = clf.predict(np.array(X_test[0], ndmin = 2))
+    #plt.imshow(predicted)
+    #plt.show()
+    #print(
+    #f"Classification report for classifier {clf}:\n"
+    #f"{sklearn.metrics.classification_report(np.array(y_test[0], ndmin=1), predicted)}\n")
+    #plt.imshow(projConcat)
+    #plt.show()
+    #array = binarizeImage(array)
+    #array = fixInclination("bwimage.png")
+    #print(array.shape)
+    #print(array)
 
-i = 0
-while (i < num_images):
-    image = np.asarray(data[i]).squeeze()
-    plt.imshow(image)
-    plt.show()
-    #image = fixInclination(image)
-    #image = binarizeImage(image)
-    
-    i = i + 1
+predicted = clf.predict(np.array(X_test[0], ndmin = 1))
+print(predicted)
 
     
     

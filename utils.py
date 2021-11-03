@@ -22,9 +22,10 @@ def openImage(path):
 # requisito 2 - voltar aqui depois se necessário
 
 
-def fixInclination(image):
+def fixInclination(path):
     # carrega a imagem
-    #image = cv2.imread(path)
+    image = cv2.imread(path)
+    #print(image)
 
     # corrige a escala de cinza
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -40,14 +41,14 @@ def fixInclination(image):
     # e computa a área de rotação que contém todas as coordenadas
     coords = np.column_stack(np.where(thresh > 0))
     angle = cv2.minAreaRect(coords)[-1]
-    print("angulo da imagem = ", angle)
+    #print("angulo da imagem = ", angle)
 
     if angle < -45:
         angle = -(90 + angle)
-        print("if")
+        #print("if")
     else:
         angle = -angle
-        print("else")
+        #print("else")
 
     if angle < -45:
         angle = 90 - abs(angle)
@@ -57,21 +58,22 @@ def fixInclination(image):
     M = cv2.getRotationMatrix2D(center, angle, 1.0)
     rotated = cv2.warpAffine(image, M, (w, h),
                              flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-    cv2.putText(rotated, "Angle: {:.2f} degrees".format(angle),
-                (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-    print("[INFO] angle: {:.3f}".format(angle))
-    cv2.imshow("Input", image)
-    cv2.imshow("Rotated", rotated)
+    
+    #cv2.putText(rotated, "Angle: {:.2f} degrees".format(angle),
+                #(10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+    #print("[INFO] angle: {:.3f}".format(angle))
+    #cv2.imshow("Input", image)
+    #cv2.imshow("Rotated", rotated)
     cv2.waitKey(0)
     
-    return rotated
+    return np.array(np.mat(rotated[0]))
 
 # requisito 1 - pronto
 def binarizeImage(im_gray):
     #im_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     (thresh, im_bw) = cv2.threshold(im_gray, 128,
                                     50, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    #cv2.imwrite("bwimage.png", im_bw)
+    cv2.imwrite("bwimage.png", im_bw)
     return im_bw
 
 
@@ -102,9 +104,9 @@ def equalizeHistogram(path):
     cv2.waitKey()
 
 
-def horizontalProjection(path):
+def horizontalProjection(img1):
 
-    img1 = cv2.imread(path, 0)
+    #img1 = cv2.imread(image, 0)
     ret, img1 = cv2.threshold(img1, 80, 255, cv2.THRESH_BINARY)
 
     (h, w) = img1.shape
@@ -119,15 +121,15 @@ def horizontalProjection(path):
     for i in range(0, h):
         for j in range(0, a[i]):
             img1[i, j] = 0
-    cv2.imshow("img", img1)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow("img", img1)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
     
     return img1;
 
 
-def verticalProjection(path):
-    img1 = cv2.imread(path, 0)
+def verticalProjection(img1):
+    #img1 = cv2.imread(image, 0)
     ret, img1 = cv2.threshold(img1, 80, 255, cv2.THRESH_BINARY)
 
     (h, w) = img1.shape
@@ -143,9 +145,9 @@ def verticalProjection(path):
         for j in range(h-a[i], h):
             img1[j, i] = 0
 
-    cv2.imshow("img", img1)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow("img", img1)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
 
     return img1;
 
