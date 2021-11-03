@@ -40,6 +40,12 @@ def trainDeepLearning():
     X_train /= 255
     X_test /= 255
     
+    n_classes = 10
+    print("Shape before one-hot encoding: ", y_train.shape)
+    Y_train = np_utils.to_categorical(y_train, n_classes)
+    Y_test = np_utils.to_categorical(y_test, n_classes)
+    print("Shape after one-hot encoding: ", Y_train.shape)
+    
     model = Sequential()
     model.add(Dense(512, input_shape=(784,)))
     model.add(Activation('relu'))                            
@@ -54,22 +60,20 @@ def trainDeepLearning():
     
     model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
     
-    history = model.fit(X_train, y_train,
-          batch_size=128, epochs=3,
-          verbose=2,
-          validation_data=(X_test, y_test))
+    history = model.fit(X_train, Y_train,epochs=20,verbose=2,validation_data=(X_test, Y_test))
     
-    save_dir = "/results/"
+    save_dir = "./results/"
     model_name = 'keras_mnist.h5'
     model_path = os.path.join(save_dir, model_name)
+    print("path modelo = ", model_path)
     model.save(model_path)
     print('Saved trained model at %s ' % model_path)
-
+    
     # plotting the metrics
     fig = plt.figure()
     plt.subplot(2,1,1)
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
@@ -84,5 +88,5 @@ def trainDeepLearning():
     plt.legend(['train', 'test'], loc='upper right')
 
     plt.tight_layout()
-
+    plt.show()
     fig.show()

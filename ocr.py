@@ -20,6 +20,7 @@ import sklearn
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report
 from svm import *
+from rede_profunda import *
 
 # Baseline MLP for MNIST dataset
 from keras.datasets import mnist
