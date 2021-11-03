@@ -34,7 +34,7 @@ from keras.layers import Activation
 from keras.layers import Dropout
 from keras.utils import np_utils
 
-def trainDeepLearning():
+def trainSVM():
     data = mnist.load_data()
     (X_train, y_train), (X_test, y_test) = data
     X_train = X_train.reshape(60000, 784)
@@ -46,23 +46,7 @@ def trainDeepLearning():
     X_train /= 255
     X_test /= 255
     
-    model = Sequential()
-    model.add(Dense(512, input_shape=(784,)))
-    model.add(Activation('relu'))                            
-    model.add(Dropout(0.2))
-
-    model.add(Dense(512))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.2))
-
-    model.add(Dense(10))
-    model.add(Activation('softmax'))
-    
-    model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
-    
-    
-    
-    '''for i in range(0,50):
+    for i in range(0,50):
         array = np.array(np.mat(data[0][0][i]))
         projHor = horizontalProjection(array)
         projVert = verticalProjection(array)
@@ -85,7 +69,7 @@ def trainDeepLearning():
         predicted = clf.predict(np.array(np.mat(data[0][0][i])))
         print(predicted)
         print ("accuracy",sklearn.metrics.accuracy_score(np.array(y_train, ndmin = 1), predicted))
-        print("terminei")'''
+        print("terminei")
 
 
 
