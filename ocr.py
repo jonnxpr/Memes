@@ -19,7 +19,13 @@ from keras.datasets import mnist
 import sklearn
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report
+from svm import *
 
+# Baseline MLP for MNIST dataset
+from keras.datasets import mnist
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.utils import np_utils
 '''
     Processo:
     Pegar a imagem
@@ -39,33 +45,64 @@ from sklearn.metrics import classification_report
     Lastly, apply closing(dilation then erosion) on the image to close all the 
     small holes inside the words.
 '''
-data = mnist.load_data()
-(X_train, y_train), (X_test, y_test) = data
+class Interface(object):
+    def __init__(self):
+        self.root = Tk()
+        self.root.title = "Implementação de OCR"
+        self.canvas = Canvas(self.root, bg='white', width=800, heigh=600)
+        self.canvas.grid(row=3, columnspan=4)
 
-arrayFinal = np.array([])
+        # Menu opções
+        self.menuBar = Menu(self.root)
 
-for i in range(0,50):
-    array = np.array(np.mat(data[0][0][i]))
-    projHor = horizontalProjection(array)
-    projVert = verticalProjection(array)
-    projConcat = projHor + projVert
-    clf = sklearn.svm.SVC(gamma=0.001, C=100)
-    clf.fit(projHor, np.array(projVert[0], ndmin = 1))
-    #predicted = clf.predict(np.array(X_test[0], ndmin = 2))
-    #plt.imshow(predicted)
-    #plt.show()
-    #print(
-    #f"Classification report for classifier {clf}:\n"
-    #f"{sklearn.metrics.classification_report(np.array(y_test[0], ndmin=1), predicted)}\n")
-    #plt.imshow(projConcat)
-    #plt.show()
-    #array = binarizeImage(array)
-    #array = fixInclination("bwimage.png")
-    #print(array.shape)
-    #print(array)
+        self.options = Menu(self.menuBar, tearoff=0)
+        self.options.add_command(label="Abrir imagem", command=self.open_image)
+        self.menuBar.add_cascade(label="Opções", menu=self.options)
+        self.root.config(menu=self.menuBar)
 
-predicted = clf.predict(np.array(X_test[0], ndmin = 1))
-print(predicted)
+        # Menu funções
+        self.options = Menu(self.menuBar, tearoff=0)
+        self.options.add_command(label="Corrigir inclinação")
+        self.options.add_command(label="Binarizar")
+        self.options.add_command(label="Remoção de ruídos")
+        self.options.add_command(label="Esqueleto da imagem")
+        self.options.add_command(label="Escala")
+        self.options.add_command(label="Treinar classificador Mahalanobis")
+        self.options.add_command(label="Treinar SVM")
+        self.options.add_command(label="Treinar rede neural", command = trainDeepLearning)
+        self.options.add_command(label="Calcular matriz de confusão")
+        self.menuBar.add_cascade(label="Funções", menu=self.options)
+        self.root.config(menu=self.menuBar)
+
+        # Menu sobre
+        self.menuBar.add_command(label="Sobre", command=self.show_group)
+
+        self.root.mainloop()
+
+    def show_group(self):
+        # Mostra na tela uma caixa de mensagem contendo o nome do grupo
+        tkinter.messagebox.showinfo('Informações do trabalho', 'Processamento de Imagens - 2/2021 \nProfessor Alexei Machado \nIntegrantes: Ana Flávia Dias, Eduardo Pereira, Jonathan Douglas, Umberto Castanheira')
+
+    # Função para abrir uma imagem selecionada
+    def open_image(self):
+        path = dlg.askopenfilename()
+        if path != "":
+            self.root.path = path
+            load = Image.open(path)
+            self.root.image_pillow = load
+            self.root.image = image = ImageTk.PhotoImage(load)
+            iw = image.width()
+            ih = image.height()
+            self.canvas.config(width=iw, height=ih)
+            self.canvas.create_image(0, 0, image=image, anchor=NW)
+
+if __name__ == '__main__':
+    Interface()
+
+
+
+
+
 
     
     
