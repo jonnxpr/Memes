@@ -12,16 +12,12 @@ import cv2
 from PIL import Image
 
 import matplotlib.pyplot as plt
-
-# já funciona!
-def openImage(path):
-    # carrega uma imagem e mostra
-    im = Image.open(path)
-    im.show()
+import tkinter.messagebox
+from tkinter import *
+from tkinter import filedialog as dlg
+from PIL import Image, ImageTk
 
 # requisito 2 - voltar aqui depois se necessário
-
-
 def fixInclination(path):
     # carrega a imagem
     image = cv2.imread(path)
@@ -69,13 +65,11 @@ def fixInclination(path):
     return np.array(np.mat(rotated[0]))
 
 # requisito 1 - pronto
-def binarizeImage(im_gray):
+def binarizeImage(im_gray, quant):
     #im_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    (thresh, im_bw) = cv2.threshold(im_gray, 128,
-                                    50, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    cv2.imwrite("bwimage.png", im_bw)
+    (thresh, im_bw) = cv2.threshold(im_gray, 128, quant, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    #cv2.imwrite("bwimage.png", im_bw)
     return im_bw
-
 
 def removeNoise(path):
     image = cv2.imread(path)
@@ -184,22 +178,43 @@ def skeletonize(path):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def scale(path):
+def scale(path, scaleProportion):
     img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-    print('Original Dimensions : ',img.shape)
-    scale_percent = 60 # percent of original size
+    print('Original Dimensions : ', img.shape)
+    scale_percent = scaleProportion # percent of original size
     width = int(img.shape[1] * scale_percent / 100)
     height = int(img.shape[0] * scale_percent / 100)
     dim = (width, height)
     # resize image
     resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
     print('Resized Dimensions : ',resized.shape)
-    cv2.imshow("Resized image", resized)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.imshow("Resized image", resized)
+    #cv2.waitKey(0)
+    #cv2.destroyAllWindows()
+    return resized
 
-def getGrayImage(image):
-    coeffs = np.array([0.114, 0.587, 0.229])
-    images_gray = (image.astype(np.float) * coeffs).sum(axis=-1, keepdims=True)
-    images_gray = images_gray.astype(image.dtype)   
-    return image
+def getData(rangeFigure, baseX, baseY):
+    fig = plt.figure()
+    for i in range(rangeFigure):
+        #print("comecei")
+        plt.subplot(3,3,i+1)
+        plt.tight_layout()
+        plt.imshow(baseX[i], cmap='gray', interpolation='none')
+        plt.title("Digit: {}".format(baseY[i]))
+        plt.xticks([])
+        plt.yticks([])
+    fig.show()
+
+def pixelDistribution(index, baseX, baseY):
+    fig = plt.figure()
+    plt.subplot(2,1,1)
+    plt.imshow(baseX[index], cmap='gray', interpolation='none')
+    plt.title("Digit: {}".format(baseY[index]))
+    plt.xticks([])
+    plt.yticks([])
+    plt.subplot(2,1,2)
+    plt.hist(baseX[index].reshape(784))
+    plt.title("Pixel Value Distribution")
+    fig.show()
+
+
