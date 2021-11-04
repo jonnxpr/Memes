@@ -8,9 +8,7 @@
 # Importações
 import numpy as np
 import cv2
-
 import matplotlib.pyplot as plt
-
 
 # requisito 2 - voltar aqui depois se necessário
 def fixInclination(path):
@@ -79,7 +77,6 @@ def removeNoise(path):
 
     cv2.imshow('gray', out_gray)
     #cv2.imwrite('gray.png', out_gray)
-
 
 def equalizeHistogram(path):
     src = cv2.imread(cv2.samples.findFile(path))
