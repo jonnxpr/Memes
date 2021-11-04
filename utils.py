@@ -2,20 +2,15 @@
 # Curso: Ciência da Computação - 2021/2 - PUCMG
 # Professor(a): Alexei Manso Corrêa Machado
 # Alunos: Ana Flávia Dias, Eduardo Pereira, Jonathan Douglas e Umberto Castanheira
-# Versão: 1.0
-# Data da última modificação: 27/10/2021
+# Data da última modificação: 04/11/2021
 # Arquivo: utils.py
 
 # Importações
 import numpy as np
 import cv2
-from PIL import Image
 
 import matplotlib.pyplot as plt
-import tkinter.messagebox
-from tkinter import *
-from tkinter import filedialog as dlg
-from PIL import Image, ImageTk
+
 
 # requisito 2 - voltar aqui depois se necessário
 def fixInclination(path):

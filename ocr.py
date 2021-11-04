@@ -2,31 +2,16 @@
 # Curso: Ciência da Computação - 2021/2 - PUCMG
 # Professor(a): Alexei Manso Corrêa Machado
 # Alunos: Ana Flávia Dias, Eduardo Pereira, Jonathan Douglas e Umberto Castanheira
-# Versão: 1.0
-# Data da última modificação: 27/10/2021
+# Data da última modificação: 04/11/2021
 # Arquivo: ocr.py 
 
-import numpy as np
-import cv2
+from tkinter import *
 from PIL import Image
-import matplotlib.pyplot as plt
-import gzip
-
-from numpy.lib.ufunclike import fix
 from utils import *
-import idx2numpy
-from keras.datasets import mnist
-import sklearn
-from sklearn.svm import SVC
-from sklearn.metrics import classification_report
 from svm import *
 from rede_profunda import *
 
 # Baseline MLP for MNIST dataset
-from keras.datasets import mnist
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.utils import np_utils
 '''
     Processo:
     Pegar a imagem
@@ -69,7 +54,7 @@ class Interface(object):
         self.options.add_command(label="Esqueleto da imagem")
         self.options.add_command(label="Escala")
         self.options.add_command(label="Treinar classificador Mahalanobis")
-        self.options.add_command(label="Treinar SVM")
+        self.options.add_command(label="Treinar SVM", command = trainSVM)
         self.options.add_command(label="Treinar rede neural", command = trainDeepLearning)
         self.options.add_command(label="Calcular matriz de confusão")
         self.menuBar.add_cascade(label="Funções", menu=self.options)
@@ -99,11 +84,3 @@ class Interface(object):
 
 if __name__ == '__main__':
     Interface()
-
-
-
-
-
-
-    
-    

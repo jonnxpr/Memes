@@ -2,37 +2,20 @@
 # Curso: Ciência da Computação - 2021/2 - PUCMG
 # Professor(a): Alexei Manso Corrêa Machado
 # Alunos: Ana Flávia Dias, Eduardo Pereira, Jonathan Douglas e Umberto Castanheira
-# Versão: 1.0
-# Data da última modificação: 25/10/2021
+# Data da última modificação: 04/11/2021
 # Arquivo: svm.py
 
 #Importações
-import svm
-from scipy.spatial import distance
-import scipy
-import numpy as np 
-import matplotlib.pyplot as plt
-import pandas as pd
-import cv2
-from PIL import Image
-import gzip
-
-from numpy.lib.ufunclike import fix
+import numpy as np
 from utils import *
-from keras.datasets import mnist
-import keras
-from keras import *
+
 import sklearn
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report
 
 # Baseline MLP for MNIST dataset
 from keras.datasets import mnist
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Activation
-from keras.layers import Dropout
-from keras.utils import np_utils
+
 
 def trainSVM():
     data = mnist.load_data()
