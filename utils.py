@@ -53,8 +53,8 @@ def fixInclination(path):
     #cv2.putText(rotated, "Angle: {:.2f} degrees".format(angle),
                 #(10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
     #print("[INFO] angle: {:.3f}".format(angle))
-    #cv2.imshow("Input", image)
-    #cv2.imshow("Rotated", rotated)
+    cv2.imshow("Input", image)
+    cv2.imshow("Rotated", rotated)
     cv2.waitKey(0)
     
     return np.array(np.mat(rotated[0]))
@@ -63,7 +63,7 @@ def fixInclination(path):
 def binarizeImage(im_gray, quant):
     #im_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     (thresh, im_bw) = cv2.threshold(im_gray, 128, quant, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    #cv2.imwrite("bwimage.png", im_bw)
+    cv2.imwrite("bwimage.png", im_bw)
     return im_bw
 
 def removeNoise(path):
@@ -75,10 +75,10 @@ def removeNoise(path):
     out_binary = cv2.threshold(out_gray, 0, 255, cv2.THRESH_OTSU)[1]
 
     cv2.imshow('binary', out_binary)
-    cv2.imwrite('binary.png', out_binary)
+    #cv2.imwrite('binary.png', out_binary)
 
     cv2.imshow('gray', out_gray)
-    cv2.imwrite('gray.png', out_gray)
+    #cv2.imwrite('gray.png', out_gray)
 
 
 def equalizeHistogram(path):
@@ -110,9 +110,9 @@ def horizontalProjection(img1):
     for i in range(0, h):
         for j in range(0, a[i]):
             img1[i, j] = 0
-    #cv2.imshow("img", img1)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
+    cv2.imshow("img", img1)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     
     return img1;
 
@@ -134,9 +134,9 @@ def verticalProjection(img1):
         for j in range(h-a[i], h):
             img1[j, i] = 0
 
-    #cv2.imshow("img", img1)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
+    cv2.imshow("img", img1)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     return img1;
 
@@ -183,9 +183,9 @@ def scale(path, scaleProportion):
     # resize image
     resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
     print('Resized Dimensions : ',resized.shape)
-    #cv2.imshow("Resized image", resized)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
+    cv2.imshow("Resized image", resized)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     return resized
 
 def getData(rangeFigure, baseX, baseY):

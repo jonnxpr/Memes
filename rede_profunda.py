@@ -50,7 +50,7 @@ def trainDeepLearning():
     
     model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
     
-    history = model.fit(X_train, Y_train,epochs=3,verbose=2,validation_data=(X_test, Y_test))
+    history = model.fit(X_train, Y_train,epochs=20,verbose=2,validation_data=(X_test, Y_test))
     
     save_dir = "./results/"
     model_name = 'keras_mnist.h5'
