@@ -50,7 +50,8 @@ def trainSVM():
         #print(array)
 
         predicted = clf.predict(np.array(np.mat(data[0][0][i])))
-        print(predicted)
+        
+        print(np.argmax(predicted))
         print ("accuracy",sklearn.metrics.accuracy_score(np.array(y_train, ndmin = 1), predicted))
         print("terminei")
 

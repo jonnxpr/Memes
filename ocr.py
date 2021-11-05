@@ -40,10 +40,13 @@ class Interface(object):
         self.options.add_command(label="Remoção de ruídos", command = self.removeNoise)
         self.options.add_command(label="Esqueleto da imagem", command = self.skeletonize)
         self.options.add_command(label="Escala", command = self.scale)
-        self.options.add_command(label="Treinar classificador Mahalanobis")
-        self.options.add_command(label="Treinar SVM", command = trainSVM)
+        self.options.add_command(label="Projeção Horizontal")
+        self.options.add_command(label="Projeção Vertical")
+        self.options.add_command(label="União das projeções", command = self.concatenateProj)
+        self.options.add_command(label="Treinar classificador Mahalanobis", command = self.trainMahalanobis)
+        self.options.add_command(label="Treinar SVM")
         self.options.add_command(label="Treinar rede neural", command = trainDeepLearning)
-        self.options.add_command(label="Calcular matriz de confusão")
+        self.options.add_command(label="Calcular matriz de confusão", command = self.getMatrizConfusao)
         self.menuBar.add_cascade(label="Funções", menu=self.options)
         self.root.config(menu=self.menuBar)
 
@@ -74,7 +77,7 @@ class Interface(object):
     def openImageCV(self, path):
         image = cv2.imread(path)
         return image
-    
+
     def fixInclination(self):
         image = self.openImageCV(self.path)
 
@@ -140,34 +143,33 @@ class Interface(object):
         cv2.imshow('Equalized Image', dst)
         cv2.waitKey()
 
-    def horizontalProjection(self):
-        image = self.openImageCV(self.path) 
-        ret, img1 = cv2.threshold(image, 80, 255, cv2.THRESH_BINARY)
+    def horizontalProjection(self, img1):
+        ret, img1 = cv2.threshold(img1, 80, 255, cv2.THRESH_BINARY) 
+ 
+        (h, w) = img1.shape 
+ 
+        a = [0 for z in range(0, h)] 
+ 
+        for i in range(0, h): 
+            for j in range(0, w): 
+                if img1[i, j] == 0: 
+                    a[i] += 1 
+                    img1[i, j] = 255 
+        for i in range(0, h): 
+            for j in range(0, a[i]): 
+                img1[i, j] = 0 
+    #cv2.imshow("img", img1) 
+    #cv2.waitKey(0) 
+    #cv2.destroyAllWindows() 
+     
+        return img1; 
 
-        (h, w) = img1.shape
+    def verticalProjection(self, img1):
+        #image = cv2.imread(self.path)
+        print(img1)
+        ret, img1 = cv2.threshold(img1, 80, 255, cv2.THRESH_BINARY)
 
-        a = [0 for z in range(0, h)]
-
-        for i in range(0, h):
-            for j in range(0, w):
-                if img1[i, j] == 0:
-                    a[i] += 1
-                    img1[i, j] = 255
-        for i in range(0, h):
-            for j in range(0, a[i]):
-                img1[i, j] = 0
-        cv2.imshow("img", img1)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        
-        return img1;
-
-
-    def verticalProjection(self):
-        image = self.openImageCV(self.path)
-        ret, img1 = cv2.threshold(image, 80, 255, cv2.THRESH_BINARY)
-
-        (h, w) = img1.shape
+        (h, w) = img1
 
         a = [0 for z in range(0, w)]
 
@@ -185,6 +187,14 @@ class Interface(object):
         cv2.destroyAllWindows()
 
         return img1;
+    
+    def concatenateProj(self):
+        image = cv2.imread(self.path)
+        projHorizontal = self.horizontalProjection()
+        projVeritcal = self.verticalProjection()
+        projConcat = projHorizontal + projVeritcal
+        plt.imshow(projConcat)
+        plt.show()
 
     def skeletonize(self):
         image = cv2.imread(self.path, 0)
@@ -244,6 +254,12 @@ class Interface(object):
         plt.hist(baseX[index].reshape(784))
         plt.title("Pixel Value Distribution")
         fig.show()
+
+    def trainMahalanobis(self):
+        print("treino do mahalanobis")
+    
+    def getMatrizConfusao(self):
+        print("matriz de confusão")
 
 if __name__ == '__main__':
     Interface()
