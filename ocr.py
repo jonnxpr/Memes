@@ -5,6 +5,7 @@
 # Data da última modificação: 04/11/2021
 # Arquivo: ocr.py 
 
+import tkinter
 from tkinter import *
 from tkinter import filedialog as dlg
 from PIL import Image, ImageTk
@@ -16,6 +17,7 @@ import matplotlib.pyplot as plt
 
 class Interface(object):
     loadedImage = 0
+    path = ""
 
     def __init__(self):
         self.root = Tk()
@@ -59,6 +61,7 @@ class Interface(object):
         path = dlg.askopenfilename()
         if path != "":
             self.root.path = path
+            self.path = path
             self.loadedImage = Image.open(path)
             self.root.image_pillow = self.loadedImage
             self.root.image = image = ImageTk.PhotoImage(self.loadedImage)
@@ -66,10 +69,14 @@ class Interface(object):
             ih = image.height()
             self.canvas.config(width=iw, height=ih)
             self.canvas.create_image(0, 0, image=image, anchor=NW)
-            print(self.loadedImage)
-
+            
+            
+    def openImageCV(self, path):
+        image = cv2.imread(path)
+        return image
+    
     def fixInclination(self):
-        image = self.loadedImage
+        image = self.openImageCV(self.path)
 
         # corrige a escala de cinza
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -107,14 +114,15 @@ class Interface(object):
         return np.array(np.mat(rotated[0]))
 
     def binarizeImage(self):
-        cv2.imshow("Input", self.loadedImage)
-        (thresh, im_bw) = cv2.threshold(self.loadedImage, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+        im_gray = cv2.imread(self.path, cv2.IMREAD_GRAYSCALE)
+        cv2.imshow("Input", im_gray)
+        (thresh, im_bw) = cv2.threshold(im_gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         cv2.imshow("Binarized", im_bw)
         
         return im_bw
 
     def removeNoise(self):
-        image = self.loadedImage
+        image = cv2.imread(self.path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         se = cv2.getStructuringElement(cv2.MORPH_RECT, (8, 8))
         bg = cv2.morphologyEx(image, cv2.MORPH_DILATE, se)
@@ -133,7 +141,8 @@ class Interface(object):
         cv2.waitKey()
 
     def horizontalProjection(self):
-        ret, img1 = cv2.threshold(self.loadedImage, 80, 255, cv2.THRESH_BINARY)
+        image = self.openImageCV(self.path) 
+        ret, img1 = cv2.threshold(image, 80, 255, cv2.THRESH_BINARY)
 
         (h, w) = img1.shape
 
@@ -155,7 +164,8 @@ class Interface(object):
 
 
     def verticalProjection(self):
-        ret, img1 = cv2.threshold(self.loadedImage, 80, 255, cv2.THRESH_BINARY)
+        image = self.openImageCV(self.path)
+        ret, img1 = cv2.threshold(image, 80, 255, cv2.THRESH_BINARY)
 
         (h, w) = img1.shape
 
@@ -177,7 +187,8 @@ class Interface(object):
         return img1;
 
     def skeletonize(self):
-        ret, img = cv2.threshold(self.loadedImage, 127, 255, 0)
+        image = cv2.imread(self.path, 0)
+        ret, img = cv2.threshold(image, 127, 255, 0)
         size = np.size(img)
         skel = np.zeros(img.shape, np.uint8)
 
@@ -196,10 +207,10 @@ class Interface(object):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    def scale(self, scaleProportion):
-        img = cv2.imread(self.loadedImage, cv2.IMREAD_UNCHANGED)
+    def scale(self):
+        img = cv2.imread(self.path, cv2.IMREAD_UNCHANGED)
         print('Original Dimensions : ', img.shape)
-        scale_percent = scaleProportion
+        scale_percent = 60
         width = int(img.shape[1] * scale_percent / 100)
         height = int(img.shape[0] * scale_percent / 100)
         dim = (width, height)
