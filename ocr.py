@@ -6,36 +6,17 @@
 # Arquivo: ocr.py 
 
 from tkinter import *
-from PIL import Image
+from tkinter import filedialog as dlg
+from PIL import Image, ImageTk
 from svm import *
 from rede_profunda import *
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-# Baseline MLP for MNIST dataset
-'''
-    Processo:
-    Pegar a imagem
-    Corrigir a inclinação
-    Binarizar
-    Remover os ruídos
-    Criar o esqueleto da imagem
-'''
-
-'''
-    I had a project to detect license plates and these were the steps I did, 
-    you can apply them to your project. After greying the image try applying 
-    equalize histogram to the image, this allows the area's in the image with 
-    lower contrast to gain a higher contrast. Then blur the image to reduce 
-    the noise in the background. Next apply edge detection on the image, 
-    make sure that noise is sufficiently removed as ED is susceptible to it. 
-    Lastly, apply closing(dilation then erosion) on the image to close all the 
-    small holes inside the words.
-'''
 class Interface(object):
-    loadedImage = Image()
-    
+    loadedImage = 0
+
     def __init__(self):
         self.root = Tk()
         self.root.title = "Implementação de OCR"
@@ -52,11 +33,11 @@ class Interface(object):
 
         # Menu funções
         self.options = Menu(self.menuBar, tearoff=0)
-        self.options.add_command(label="Corrigir inclinação")
-        self.options.add_command(label="Binarizar")
-        self.options.add_command(label="Remoção de ruídos")
-        self.options.add_command(label="Esqueleto da imagem")
-        self.options.add_command(label="Escala")
+        self.options.add_command(label="Corrigir inclinação", command = self.fixInclination)
+        self.options.add_command(label="Binarizar", command = self.binarizeImage)
+        self.options.add_command(label="Remoção de ruídos", command = self.removeNoise)
+        self.options.add_command(label="Esqueleto da imagem", command = self.skeletonize)
+        self.options.add_command(label="Escala", command = self.scale)
         self.options.add_command(label="Treinar classificador Mahalanobis")
         self.options.add_command(label="Treinar SVM", command = trainSVM)
         self.options.add_command(label="Treinar rede neural", command = trainDeepLearning)
@@ -79,18 +60,15 @@ class Interface(object):
         if path != "":
             self.root.path = path
             self.loadedImage = Image.open(path)
-            self.root.image_pillow = loadedImage
-            self.root.image = image = ImageTk.PhotoImage(loadedImage)
+            self.root.image_pillow = self.loadedImage
+            self.root.image = image = ImageTk.PhotoImage(self.loadedImage)
             iw = image.width()
             ih = image.height()
             self.canvas.config(width=iw, height=ih)
             self.canvas.create_image(0, 0, image=image, anchor=NW)
+            print(self.loadedImage)
 
-    # requisito 2 - voltar aqui depois se necessário
     def fixInclination(self):
-        # carrega a imagem
-        #image = cv2.imread(path)
-        #print(image)
         image = self.loadedImage
 
         # corrige a escala de cinza
@@ -107,14 +85,11 @@ class Interface(object):
         # e computa a área de rotação que contém todas as coordenadas
         coords = np.column_stack(np.where(thresh > 0))
         angle = cv2.minAreaRect(coords)[-1]
-        #print("angulo da imagem = ", angle)
 
         if angle < -45:
             angle = -(90 + angle)
-            #print("if")
         else:
             angle = -angle
-            #print("else")
 
         if angle < -45:
             angle = 90 - abs(angle)
@@ -124,22 +99,16 @@ class Interface(object):
         M = cv2.getRotationMatrix2D(center, angle, 1.0)
         rotated = cv2.warpAffine(image, M, (w, h),
                                 flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-        
-        #cv2.putText(rotated, "Angle: {:.2f} degrees".format(angle),
-                    #(10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-        #print("[INFO] angle: {:.3f}".format(angle))
+
         cv2.imshow("Input", image)
         cv2.imshow("Rotated", rotated)
         cv2.waitKey(0)
         
         return np.array(np.mat(rotated[0]))
 
-    # requisito 1 - pronto
-    def binarizeImage(self, quant):
-        #im_gray = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+    def binarizeImage(self):
         cv2.imshow("Input", self.loadedImage)
-        (thresh, im_bw) = cv2.threshold(self.loadedImage, 128, quant, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-        #cv2.imwrite("bwimage.png", im_bw)
+        (thresh, im_bw) = cv2.threshold(self.loadedImage, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         cv2.imshow("Binarized", im_bw)
         
         return im_bw
@@ -153,16 +122,10 @@ class Interface(object):
         out_binary = cv2.threshold(out_gray, 0, 255, cv2.THRESH_OTSU)[1]
 
         cv2.imshow('binary', out_binary)
-        #cv2.imwrite('binary.png', out_binary)
 
         cv2.imshow('gray', out_gray)
-        #cv2.imwrite('gray.png', out_gray)
 
     def equalizeHistogram(self):
-        '''src = cv2.imread(cv2.samples.findFile(path))
-        if src is None:
-            print('Could not open or find the image:', path)
-            exit(0)'''
         src = cv2.cvtColor(self.loadedImage, cv2.COLOR_BGR2GRAY)
         dst = cv2.equalizeHist(src)
         cv2.imshow('Source image', src)
@@ -170,8 +133,6 @@ class Interface(object):
         cv2.waitKey()
 
     def horizontalProjection(self):
-
-        #img1 = cv2.imread(image, 0)
         ret, img1 = cv2.threshold(self.loadedImage, 80, 255, cv2.THRESH_BINARY)
 
         (h, w) = img1.shape
@@ -194,7 +155,6 @@ class Interface(object):
 
 
     def verticalProjection(self):
-        #img1 = cv2.imread(image, 0)
         ret, img1 = cv2.threshold(self.loadedImage, 80, 255, cv2.THRESH_BINARY)
 
         (h, w) = img1.shape
@@ -217,34 +177,21 @@ class Interface(object):
         return img1;
 
     def skeletonize(self):
-        # Read the image as a grayscale image
-        #img = cv2.imread(path, 0)
-        
-        # Threshold the image
         ret, img = cv2.threshold(self.loadedImage, 127, 255, 0)
-
-        # Step 1: Create an empty skeleton
         size = np.size(img)
         skel = np.zeros(img.shape, np.uint8)
 
-        # Get a Cross Shaped Kernel
         element = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
 
-        # Repeat steps 2-4
         while True:
-            # Step 2: Open the image
             open = cv2.morphologyEx(img, cv2.MORPH_OPEN, element)
-            # Step 3: Substract open from the original image
             temp = cv2.subtract(img, open)
-            # Step 4: Erode the original image and refine the skeleton
             eroded = cv2.erode(img, element)
             skel = cv2.bitwise_or(skel, temp)
             img = eroded.copy()
-            # Step 5: If there are no white pixels left ie.. the image has been completely eroded, quit the loop
             if cv2.countNonZero(img) == 0:
                 break
 
-        # Displaying the final skeleton
         cv2.imshow("Skeleton", skel)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -252,7 +199,7 @@ class Interface(object):
     def scale(self, scaleProportion):
         img = cv2.imread(self.loadedImage, cv2.IMREAD_UNCHANGED)
         print('Original Dimensions : ', img.shape)
-        scale_percent = scaleProportion # percent of original size
+        scale_percent = scaleProportion
         width = int(img.shape[1] * scale_percent / 100)
         height = int(img.shape[0] * scale_percent / 100)
         dim = (width, height)
@@ -267,7 +214,6 @@ class Interface(object):
     def getData(self, rangeFigure, baseX, baseY):
         fig = plt.figure()
         for i in range(rangeFigure):
-            #print("comecei")
             plt.subplot(3,3,i+1)
             plt.tight_layout()
             plt.imshow(baseX[i], cmap='gray', interpolation='none')
